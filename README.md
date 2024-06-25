@@ -1,2 +1,61 @@
-# TalkTakeTeach-Config
-This repository contains the configuration files and directories required to set up and run the TalkTakeTeach using Docker Compose. The configuration is designed to streamline the deployment process by providing a ready-to-use Docker Compose setup along with predefined volume mounts for persistent storage.
+# TalkTakeTeach Configuration Repository
+
+## Overview
+
+This repository contains the configuration files and necessary setup to run the TTT's technology stack using Docker Compose. The setup is designed to facilitate easy deployment and management of the stack, with predefined volume mounts for persistent storage.
+
+## Repository Structure
+
+- `docker-compose.yml`: The main Docker Compose file that defines the services, networks, and volume mounts.
+- `db/`: A directory containing subdirectories for mounting volumes, ensuring data persistence between container restarts.
+
+## Directory Details
+
+### `docker-compose.yml`
+
+The `docker-compose.yml` file defines the following services:
+
+- **Elasticsearch**
+- **Kibana**
+- **Elysia**
+- **Logstash**
+- **Postgres**
+
+### `db/`
+
+The root directory includes subdirectories for data persistence:
+
+- `elasticsearch/`: Stores Elasticsearch data.
+- `postgres/`: Stores PostgreSQL data and configurations.
+
+## Getting Started
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Steps to Run
+
+1. **Clone the repository**:
+
+   ```sh
+   git clone https://github.com/DVT-Launchpad-Web-Cadets/talktaketeach-config.git
+   cd talktaketeach-config
+   ```
+
+2. **Build and start the services**:
+
+   ```sh
+   docker-compose up --build
+   ```
+
+3. **Access the services**:
+   - **Elasticsearch**: Accessible at `http://localhost:9200`
+   - **Kibana**: Accessible at `http://localhost:5601`
+   - **Postgres**: Accessible at `http://locahost:5432`
+   - **Elysia**: Accessible at `http://localhost:3000`
+
+### Customization
+
+You can customize the `docker-compose.yml` file and the volume directories as needed. For example, you can adjust environment variables, add additional services, or change the volume paths to suit your specific requirements.
