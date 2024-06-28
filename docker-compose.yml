@@ -1,27 +1,27 @@
 services:
-  postgres:
-    container_name: postgres_container
-    networks:
-      - app-network
-    env_file:
-      - .env
-    ports:
-      - 5432:5432
-    expose:
-      - 5432
-    volumes:
-      - ./db/postgres:/var/lib/postgresql/data
-    image: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    restart: unless-stopped
+  # postgres:
+  #   container_name: postgres_container
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 5432:5432
+  #   expose:
+  #     - 5432
+  #   volumes:
+  #     - ./db/postgres:/var/lib/postgresql/data
+  #   image: postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   restart: unless-stopped
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
     env_file:
@@ -66,33 +66,33 @@ services:
       - elk_network
     depends_on:
       - es01
-  elysia:
-    container_name: elysia_container
-    networks:
-      - app-network
-    env_file:
-      - .env
-    image: lesedim/talktaketeach-backend-elysia:latest
-    ports:
-      - 3000:3000
-    depends_on:
-      postgres: 
-        condition: service_healthy
-    
-  adminer:
-    image: adminer
-    container_name: adminer_container
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - 8080:8080
-    networks:
-      - app-network
-    depends_on:
-      - postgres
+  # elysia:
+  #   container_name: elysia_container
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+  #   image: lesedim/talktaketeach-backend-elysia:latest
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+
+  # adminer:
+  #   image: adminer
+  #   container_name: adminer_container
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - postgres
 networks:
-  app-network:
-    driver: bridge
+  # app-network:
+  #   driver: bridge
   elk_network:
     driver: bridge
