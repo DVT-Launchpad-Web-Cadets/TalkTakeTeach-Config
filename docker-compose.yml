@@ -22,6 +22,29 @@ services:
   #     POSTGRES_USER: ${POSTGRES_USER}
   #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   #   restart: unless-stopped
+  # postgres:
+  #   container_name: postgres_container
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 5432:5432
+  #   expose:
+  #     - 5432
+  #   volumes:
+  #     - ./db/postgres:/var/lib/postgresql/data
+  #   image: postgres
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   restart: unless-stopped
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
     env_file:
@@ -92,6 +115,8 @@ services:
   #   depends_on:
   #     - postgres
 networks:
+  # app-network:
+  #   driver: bridge
   # app-network:
   #   driver: bridge
   elk_network:
