@@ -22,29 +22,9 @@ services:
   #     POSTGRES_USER: ${POSTGRES_USER}
   #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   #   restart: unless-stopped
-  # postgres:
-  #   container_name: postgres_container
-  #   networks:
-  #     - app-network
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - 5432:5432
-  #   expose:
-  #     - 5432
-  #   volumes:
-  #     - ./db/postgres:/var/lib/postgresql/data
-  #   image: postgres
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   environment:
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #   restart: unless-stopped
+
+
+
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
     env_file:
@@ -62,6 +42,8 @@ services:
       discovery.type: single-node
       xpack.security.enrollment.enabled: true
     restart: always
+
+
   kib01:
     image: docker.elastic.co/kibana/kibana:8.14.1
     container_name: kibana_container
@@ -75,6 +57,8 @@ services:
       - es01:elasticsearch
     depends_on:
       - es01
+
+
   logs01:
     image: docker.elastic.co/logstash/logstash:8.14.1
     container_name: logstash_container
@@ -86,20 +70,28 @@ services:
     volumes:
       - ./elk-config/logstash:/usr/share/logstash/pipeline
       - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logs:/var/log
     networks:
       - elk_network
     depends_on:
       - es01
+
+
   nginx:
     container_name: nginx_container
     networks:
       - app-network
       - elk_network
-    image: julesventer/talk-take-teach:v1
+    image: julesventer/talk-take-teach:latest
+    volumes:
+      - ./logs/nginx:/var/log/nginx
     ports:
-      - 8080:8080
+      - 80:80
+      - 4200:4200
     depends_on:
       - logs01
+
+
   elysia:
     container_name: elysia_container
     networks:
@@ -107,6 +99,8 @@ services:
     env_file:
       - .env
     image: lesedim/talktaketeach-backend-elysia:latest
+    volumes:
+      - ./logs/elysia:/var/log/elysia
     ports:
       - 3000:3000
     logging:
@@ -132,9 +126,12 @@ services:
   #   depends_on:
   #     - postgres
 networks:
-  # app-network:
-  #   driver: bridge
-  # app-network:
-  #   driver: bridge
+  app-network:
+    driver: bridge
   elk_network:
     driver: bridge
+
+
+# run commands:
+# docker-compose build
+# docker-compose up -d
