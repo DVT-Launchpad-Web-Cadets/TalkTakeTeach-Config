@@ -37,48 +37,47 @@ services:
     environment:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       discovery.type: single-node
-      xpack.security.enrollment.enabled: true
     restart: always
-  kib01:
-    image: docker.elastic.co/kibana/kibana:8.14.1
-    container_name: kibana_container
-    volumes:
-      - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    ports:
-      - 5601:5601
-    networks:
-      - elk_network
-    links:
-      - es01:elasticsearch
-    depends_on:
-      - es01
-  logs01:
-    image: docker.elastic.co/logstash/logstash:8.14.1
-    container_name: logstash_container
-    ports:
-      - 5044:5044
-      - 9600:9600
-    command: logstash -f /logstash_dir/logstash.conf
-    volumes:
-      - ./elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
-    networks:
-      - elk_network
-    depends_on:
-      - es01
-  elysia:
-    container_name: elysia_container
-    networks:
-      - app-network
-    env_file:
-      - .env
-    image: lesedim/talktaketeach-backend-elysia:latest
-    ports:
-      - 3000:3000
-    depends_on:
-      postgres: 
-        condition: service_healthy
-    
+  # kib01:
+  #   image: docker.elastic.co/kibana/kibana:8.14.1
+  #   container_name: kibana_container
+  #   volumes:
+  #     - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+  #   ports:
+  #     - 5601:5601
+  #   networks:
+  #     - elk_network
+  #   links:
+  #     - es01:elasticsearch
+  #   depends_on:
+  #     - es01
+  # logs01:
+  #   image: docker.elastic.co/logstash/logstash:8.14.1
+  #   container_name: logstash_container
+  #   ports:
+  #     - 5044:5044
+  #     - 9600:9600
+  #   command: logstash -f /logstash_dir/logstash.conf
+  #   volumes:
+  #     - ./elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+  #   networks:
+  #     - elk_network
+  #   depends_on:
+  #     - es01
+  # elysia:
+  #   container_name: elysia_container
+  #   networks:
+  #     - app-network
+  #   env_file:
+  #     - .env
+  #   image: lesedim/talktaketeach-backend-elysia:latest
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+
   adminer:
     image: adminer
     container_name: adminer_container
