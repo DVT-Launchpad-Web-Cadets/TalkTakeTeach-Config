@@ -1,31 +1,29 @@
 services:
-  # postgres:
-  #   container_name: postgres_container
-  #   networks:
-  #     - app-network
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - 5432:5432
-  #   expose:
-  #     - 5432
-  #   volumes:
-  #     - ./db/postgres:/var/lib/postgresql/data
-  #   image: postgres
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   environment:
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #   restart: unless-stopped
+  postgres:
+    container_name: postgres_container
+    networks:
+      - app-network
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    # expose:
+    #   - 5432
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
 
-
-
-  es01:
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
     env_file:
       - .env
@@ -36,15 +34,21 @@ services:
       - 9200:9200
       - 9300:9300
     networks:
-      - elk_network
+      - app-network
     environment:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       discovery.type: single-node
       xpack.security.enrollment.enabled: true
+      # xpack.security.enabled: false
+    healthcheck:
+      test: curl -s http://elasticsearch:9200 > /dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
+      start_period: 10s
     restart: always
 
-
-  kib01:
+  kibana:
     image: docker.elastic.co/kibana/kibana:8.14.1
     container_name: kibana_container
     volumes:
@@ -52,19 +56,20 @@ services:
     ports:
       - 5601:5601
     networks:
-      - elk_network
+      - app-network
     links:
-      - es01:elasticsearch
+      - elasticsearch:elasticsearch
     depends_on:
-      - es01
+      - elasticsearch
 
-
-  logs01:
+  logstash:
     image: docker.elastic.co/logstash/logstash:8.14.1
     container_name: logstash_container
+    env_file:
+      - .env
     ports:
       - 5044:5044
-      - 5000:5000
+      - 5001:5000
       - 9600:9600
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
     volumes:
@@ -72,25 +77,24 @@ services:
       - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logs:/var/log
     networks:
-      - elk_network
+      - app-network
     depends_on:
-      - es01
-
+      - elasticsearch
 
   nginx:
     container_name: nginx_container
     networks:
       - app-network
-      - elk_network
-    image: julesventer/talk-take-teach:latest
+    image: ayaazstreet/ttt-fe:latest
     volumes:
       - ./logs/nginx:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
       - 4200:4200
     depends_on:
-      - logs01
-
+      - logstash
+      - elysia
 
   elysia:
     container_name: elysia_container
@@ -98,7 +102,7 @@ services:
       - app-network
     env_file:
       - .env
-    image: lesedim/talktaketeach-backend-elysia:latest
+    image: musamabasa14/ttt_bff:latest
     volumes:
       - ./logs/elysia:/var/log/elysia
     ports:
@@ -106,12 +110,13 @@ services:
     logging:
       driver: json-file
       # options:
-      #   max-size: "10m"  
-      #   max-file: "5"    
+      #   max-size: "10m"
+      #   max-file: "5"
     depends_on:
       postgres:
         condition: service_healthy
-      - logs01
+      elasticsearch:
+        condition: service_healthy
 
   # adminer:
   #   image: adminer
@@ -125,13 +130,10 @@ services:
   #     - app-network
   #   depends_on:
   #     - postgres
+
 networks:
   app-network:
     driver: bridge
-  elk_network:
-    driver: bridge
-
-
 # run commands:
 # docker-compose build
 # docker-compose up -d

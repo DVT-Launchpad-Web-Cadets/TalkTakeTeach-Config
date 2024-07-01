@@ -130,4 +130,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-db/
+# Database content
+db/postgres/*
+db/elasticsearch/*
+
