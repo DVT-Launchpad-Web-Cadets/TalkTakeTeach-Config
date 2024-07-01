@@ -3,10 +3,6 @@ server.host: "0.0.0.0"
 elasticsearch.hosts: ["http://elasticsearch:9200"]
 elasticsearch.username: "kibana_system"
 elasticsearch.password: "cmrzMVvc*iyPydpv5eLo"
-# xpack.encryptedSavedObjects.encryptionKey: 9ef98b5864ecff35c21fb52264081200
-# xpack.reporting.encryptionKey: 6b27313b4ee90b2b8a0fba57bfc41395
-# xpack.security.encryptionKey: beaaca010e2121af551a78abc229af1c
-# docker-compose logs -f kibana_container
 
 # https://stackoverflow.com/questions/71890575/kibana-unable-to-retrieve-version-information-from-elasticsearch-nodes-missing-a/72117930#72117930
 # Exec into elasticsearch docker container and run the following command:
