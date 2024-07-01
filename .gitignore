@@ -130,16 +130,5 @@ dist
 .pnp.*
 
 # db
-db/postgres/base/*
-db/postgres/global/*
-db/postgres/pg_commit_ts/*
-db/postgres/pg_logical/*
-db/postgres/pg_multixact/*
-db/postgres/pg_notify/*
-db/postgres/pg_replslot/*
-db/postgres/pg_snapshots/*
-db/postgres/pg_subtrans/*
-db/postgres/pg_tblspc/*
-db/postgres/pg_twophase/*
-db/postgres/pg_wal/*
-db/postgres/pg_xact/*
+db/postgres/*
+db/elasticsearch/*
