@@ -113,6 +113,20 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
+
+  webscraper:
+    container_name: webscraper_container
+    networks:
+      - app-network
+    env_file:
+      - .env
+    image: ayaazstreet/ttt-web-scraper:latest
+    # volumes:
+    #   - ./logs/webscraper:/var/log
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
 networks:
   app-network:
     driver: bridge
