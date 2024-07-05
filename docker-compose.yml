@@ -121,8 +121,8 @@ services:
     env_file:
       - .env
     image: ayaazstreet/ttt-web-scraper:latest
-    # volumes:
-    #   - ./logs/webscraper:/var/log
+    volumes:
+      - ./logs/webscraper:/var/log
     depends_on:
       elasticsearch:
         condition: service_healthy
