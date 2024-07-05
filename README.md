@@ -67,6 +67,8 @@ The root directory includes subdirectories for data persistence:
      ```sh
      docker-compose up -d
      ```
+   - When accessing Kibana, use the Elastic username and password
+   - Create dashboard and import the saved dashboard 'logs-dashboard'
 
 4. **Access the services**:
    - **Elasticsearch**: Accessible at `http://localhost:9200`

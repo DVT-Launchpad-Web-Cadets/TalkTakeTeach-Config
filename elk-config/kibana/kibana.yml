@@ -1,9 +1,9 @@
 server.name: kibana
 server.host: "0.0.0.0"
-elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.hosts: ["https://elasticsearch:9200"]
+elasticsearch.ssl.verificationMode: none
 elasticsearch.username: "kibana_system"
-elasticsearch.password: "cmrzMVvc*iyPydpv5eLo"
-
+elasticsearch.password: "+wXW-dJOC1v5sKW9EWTH"
 # https://stackoverflow.com/questions/71890575/kibana-unable-to-retrieve-version-information-from-elasticsearch-nodes-missing-a/72117930#72117930
 # Exec into elasticsearch docker container and run the following command:
 # cd /usr/share/elasticsearch/bin
