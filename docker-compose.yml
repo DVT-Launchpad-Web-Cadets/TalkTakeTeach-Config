@@ -103,7 +103,10 @@ services:
       - .env
     image: musamabasa14/ttt_bff:latest
     volumes:
-      - ./logs/elysia:/var/log/elysia
+      - ./logs/elysia/chat-access.log:/app/chat-access.log
+      - ./logs/elysia/chat-error.log:/app/chat-error.log
+      - ./logs/elysia/search-access.log:/app/search-access.log
+      - ./logs/elysia/search-error.log:/app/search-error.log
     ports:
       - 3000:3000
     logging:
