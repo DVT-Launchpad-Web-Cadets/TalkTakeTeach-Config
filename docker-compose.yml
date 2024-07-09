@@ -1,0 +1,135 @@
+services:
+  postgres:
+    container_name: postgres_container
+    networks:
+      - app-network
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
+    env_file:
+      - .env
+    container_name: elasticsearch_container
+    volumes:
+      - ./db/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - app-network
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      discovery.type: single-node
+      xpack.security.enrollment.enabled: true
+    healthcheck:
+      test: curl -k -u elastic:${ELASTIC_PASSWORD} https://elasticsearch:9200 > /dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
+      start_period: 10s
+    restart: always
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.1
+    container_name: kibana_container
+    env_file:
+      - .env
+    volumes:
+      - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    networks:
+      - app-network
+    links:
+      - elasticsearch:elasticsearch
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.14.1
+    container_name: logstash_container
+    env_file:
+      - .env
+    ports:
+      - 5044:5044
+      - 5001:5000
+      - 9600:9600
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+    volumes:
+      - ./elk-config/logstash:/usr/share/logstash/pipeline
+      - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logs:/var/log
+    networks:
+      - app-network
+    depends_on:
+      - elasticsearch
+
+  nginx:
+    container_name: nginx_container
+    networks:
+      - app-network
+    image: ayaazstreet/ttt-fe:latest
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+      - 4200:4200
+    depends_on:
+      - logstash
+      - elysia
+
+  elysia:
+    container_name: elysia_container
+    networks:
+      - app-network
+    env_file:
+      - .env
+    image: musamabasa14/ttt_bff:latest
+    volumes:
+      - ./logs/elysia/chat-access.log:/app/chat-access.log
+      - ./logs/elysia/chat-error.log:/app/chat-error.log
+      - ./logs/elysia/search-access.log:/app/search-access.log
+      - ./logs/elysia/search-error.log:/app/search-error.log
+    ports:
+      - 3000:3000
+    logging:
+      driver: json-file
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+
+  webscraper:
+    container_name: webscraper_container
+    networks:
+      - app-network
+    env_file:
+      - .env
+    image: ayaazstreet/ttt-web-scraper:latest
+    volumes:
+      - ./logs/webscraper:/var/log
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+networks:
+  app-network:
+    driver: bridge

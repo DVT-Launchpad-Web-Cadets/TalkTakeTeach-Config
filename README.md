@@ -50,7 +50,27 @@ The root directory includes subdirectories for data persistence:
    docker-compose up --build
    ```
 
-3. **Access the services**:
+3. **Setup Kibana**:
+
+   - Exec into elasticsearch docker container and run the following commands:
+     ```sh
+     cd /usr/share/elasticsearch/bin
+     ./elasticsearch-reset-password -u kibana_system --auto
+     ```
+   - Copy the password and update the password in kibana.yml
+   - Stop and remove the kibana container
+     ```sh
+     docker stop kibana_container
+     docker rm kibana_container
+     ```
+   - Start back up the service
+     ```sh
+     docker-compose up -d
+     ```
+   - When accessing Kibana, use the Elastic username and password
+   - Create dashboard and import the saved dashboard 'logs-dashboard'
+
+4. **Access the services**:
    - **Elasticsearch**: Accessible at `http://localhost:9200`
    - **Kibana**: Accessible at `http://localhost:5601`
    - **Postgres**: Accessible at `http://locahost:5432`
