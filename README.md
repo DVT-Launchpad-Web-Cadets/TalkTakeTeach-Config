@@ -44,13 +44,20 @@ The root directory includes subdirectories for data persistence:
    cd talktaketeach-config
    ```
 
-2. **Build and start the services**:
+2. **Create db directories**:
+
+   ```
+   mkdir db/elasticsearch
+   mkdir db/postgres
+   ```
+
+3. **Build and start the services**:
 
    ```sh
    docker-compose up --build
    ```
 
-3. **Setup Kibana**:
+4. **Setup Kibana**:
 
    - Exec into elasticsearch docker container and run the following commands:
      ```sh
@@ -70,7 +77,7 @@ The root directory includes subdirectories for data persistence:
    - When accessing Kibana, use the Elastic username and password
    - Create dashboard and import the saved dashboard 'logs-dashboard'
 
-4. **Access the services**:
+5. **Access the services**:
    - **Elasticsearch**: Accessible at `http://localhost:9200`
    - **Kibana**: Accessible at `http://localhost:5601`
    - **Postgres**: Accessible at `http://locahost:5432`
