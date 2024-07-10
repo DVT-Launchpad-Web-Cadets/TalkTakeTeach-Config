@@ -133,3 +133,5 @@ dist
 db/postgres/*
 db/elasticsearch/*
 
+# Mac
+*.DS_Store
