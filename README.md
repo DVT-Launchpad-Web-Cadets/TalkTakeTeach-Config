@@ -47,6 +47,7 @@ The root directory includes subdirectories for data persistence:
 2. **Create db directories**:
 
    ```
+   mkdir db
    mkdir db/elasticsearch
    mkdir db/postgres
    ```
